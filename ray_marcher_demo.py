@@ -19,16 +19,18 @@ import os
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 #Size of the window and rendering
-win_size = (1280, 720)
+#win_size = (3840, 2160)
+win_size = (1920, 1080)
+#win_size = (1280, 720)
 
 #Maximum frames per second
 fps = 30
 
 #Forces an 'up' orientation when True, free-camera when False
-gimbal_lock = False
+gimbal_lock = True
 
 #Mouse look speed
-look_speed = 0.003
+look_speed = 0.001
 
 #Use this avoids collisions with the fractal
 auto_velocity = True
@@ -41,7 +43,7 @@ max_velocity = 2.0
 speed_accel = 2.0
 
 #Velocity decay factor when keys are released
-speed_decel = 0.6
+speed_decel = 0.9
 
 clicking = False
 mouse_pos = None
@@ -83,37 +85,63 @@ def infinite_spheres():
 	return obj
 
 def butterweed_hills():
+	global keyvars
+	keyvars = [2.3, 1.5, 3.61, -1.0, -0.5, -0.2]
+
 	obj = Object()
 	obj.add(OrbitInitZero())
-	for i in range(30):
+	#for i in range(30):
+	for i in range(40):
 		obj.add(FoldAbs())
-		obj.add(FoldScaleTranslate(1.5, (-1.0,-0.5,-0.2)))
+		#obj.add(FoldScaleTranslate(1.5, (-1.0,-0.5,-0.2)))
+		obj.add(FoldScaleTranslate('1', 'v'))
 		obj.add(OrbitSum((0.5, 0.03, 0.0)))
-		obj.add(FoldRotateX(3.61))
-		obj.add(FoldRotateY(2.03))
+		#obj.add(FoldRotateX(3.61))
+		obj.add(FoldRotateX('2'))
+		#obj.add(FoldRotateY(2.03))
+		obj.add(FoldRotateY('0'))
 	obj.add(Sphere(1.0, color='orbit'))
 	return obj
 
 def mandelbox():
+	global keyvars
+	keyvars = [1.0, 0.5, 1.0, 2.0, 1.0, 0.0]
+
 	obj = Object()
 	obj.add(OrbitInitInf())
 	for i in range(16):
-		obj.add(FoldBox(1.0))
-		obj.add(FoldSphere(0.5, 1.0))
-		obj.add(FoldScaleOrigin(2.0))
-		obj.add(OrbitMinAbs(1.0))
+		# obj.add(FoldBox(1.0))
+		# obj.add(FoldSphere(0.5, 1.0))
+		# obj.add(FoldScaleOrigin(2.0))
+		# obj.add(OrbitMinAbs(1.0))
+
+		obj.add(FoldBox('0'))
+		obj.add(FoldSphere('1', '2'))
+		obj.add(FoldScaleOrigin('3'))
+		obj.add(OrbitMinAbs('4'))
+		
 	obj.add(Box(6.0, color='orbit'))
 	return obj
 
 def mausoleum():
+	global keyvars
+	keyvars = [0.34, 3.28, 6.28, -5.27,-0.34,0.0]
+
 	obj = Object()
 	obj.add(OrbitInitZero())
 	for i in range(8):
-		obj.add(FoldBox(0.34))
+		# obj.add(FoldBox(0.34))
+		# obj.add(FoldMenger())
+		# obj.add(FoldScaleTranslate(3.28, (-5.27,-0.34,0.0)))
+		# obj.add(FoldRotateX(math.pi/2))
+		# obj.add(OrbitMax((0.42,0.38,0.19)))
+
+		obj.add(FoldBox('0'))
 		obj.add(FoldMenger())
-		obj.add(FoldScaleTranslate(3.28, (-5.27,-0.34,0.0)))
-		obj.add(FoldRotateX(math.pi/2))
+		obj.add(FoldScaleTranslate('1', 'v'))
+		obj.add(FoldRotateX('2'))
 		obj.add(OrbitMax((0.42,0.38,0.19)))
+
 	obj.add(Box(2.0, color='orbit'))
 	return obj
 
@@ -227,19 +255,19 @@ def reorthogonalize(mat):
 # can import the image sequence to editing software
 # to convert it to a video.
 #
-#    You can press 's' anytime for a screenshot.
+#    You can press 'F1' anytime for a screenshot.
 #---------------------------------------------------
 
 if __name__ == '__main__':
 	pygame.init()
-	window = pygame.display.set_mode(win_size, OPENGL | DOUBLEBUF)
+	window = pygame.display.set_mode(win_size, OPENGL | DOUBLEBUF ) #| FULLSCREEN
 	pygame.mouse.set_visible(False)
 	pygame.mouse.set_pos(screen_center)
 
 	#======================================================
 	#               Change the fractal here
 	#======================================================
-	obj_render = tree_planet()
+	obj_render = mausoleum()
 	#======================================================
 
 	#======================================================
@@ -247,8 +275,8 @@ if __name__ == '__main__':
 	# See pyspace/camera.py for all camera options
 	#======================================================
 	camera = Camera()
-	camera['ANTIALIASING_SAMPLES'] = 1
-	camera['AMBIENT_OCCLUSION_STRENGTH'] = 0.01
+	camera['ANTIALIASING_SAMPLES'] = 2
+	camera['AMBIENT_OCCLUSION_STRENGTH'] = 0.02
 	#======================================================
 
 	shader = Shader(obj_render)
@@ -310,7 +338,7 @@ if __name__ == '__main__':
 						print("Finished Recording.")
 				elif event.key == pygame.K_p:
 					start_playback()
-				elif event.key == pygame.K_s:
+				elif event.key == pygame.K_F1:
 					pygame.image.save(window, 'screenshot.png')
 				elif event.key == pygame.K_ESCAPE:
 					sys.exit(0)
@@ -330,18 +358,30 @@ if __name__ == '__main__':
 		if all_keys[pygame.K_LSHIFT]:   rate *= 0.1
 		elif all_keys[pygame.K_RSHIFT]: rate *= 10.0
 
-		if all_keys[pygame.K_INSERT]:   keyvars[0] += rate; print(keyvars)
-		if all_keys[pygame.K_DELETE]:   keyvars[0] -= rate; print(keyvars)
-		if all_keys[pygame.K_HOME]:     keyvars[1] += rate; print(keyvars)
-		if all_keys[pygame.K_END]:      keyvars[1] -= rate; print(keyvars)
-		if all_keys[pygame.K_PAGEUP]:   keyvars[2] += rate; print(keyvars)
-		if all_keys[pygame.K_PAGEDOWN]: keyvars[2] -= rate; print(keyvars)
-		if all_keys[pygame.K_KP7]:      keyvars[3] += rate; print(keyvars)
-		if all_keys[pygame.K_KP4]:      keyvars[3] -= rate; print(keyvars)
-		if all_keys[pygame.K_KP8]:      keyvars[4] += rate; print(keyvars)
-		if all_keys[pygame.K_KP5]:      keyvars[4] -= rate; print(keyvars)
-		if all_keys[pygame.K_KP9]:      keyvars[5] += rate; print(keyvars)
-		if all_keys[pygame.K_KP6]:      keyvars[5] -= rate; print(keyvars)
+		# if all_keys[pygame.K_INSERT]:   keyvars[0] += rate; print(keyvars)
+		# if all_keys[pygame.K_DELETE]:   keyvars[0] -= rate; print(keyvars)
+		# if all_keys[pygame.K_HOME]:     keyvars[1] += rate; print(keyvars)
+		# if all_keys[pygame.K_END]:      keyvars[1] -= rate; print(keyvars)
+		# if all_keys[pygame.K_PAGEUP]:   keyvars[2] += rate; print(keyvars)
+		# if all_keys[pygame.K_PAGEDOWN]: keyvars[2] -= rate; print(keyvars)
+		# if all_keys[pygame.K_KP7]:      keyvars[3] += rate; print(keyvars)
+		# if all_keys[pygame.K_KP4]:      keyvars[3] -= rate; print(keyvars)
+		# if all_keys[pygame.K_KP8]:      keyvars[4] += rate; print(keyvars)
+		# if all_keys[pygame.K_KP5]:      keyvars[4] -= rate; print(keyvars)
+		# if all_keys[pygame.K_KP9]:      keyvars[5] += rate; print(keyvars)
+		# if all_keys[pygame.K_KP6]:      keyvars[5] -= rate; print(keyvars)
+		if all_keys[pygame.K_q]:      keyvars[0] += rate; print(keyvars)
+		if all_keys[pygame.K_a]:      keyvars[0] -= rate; print(keyvars)
+		if all_keys[pygame.K_w]:      keyvars[1] += rate; print(keyvars)
+		if all_keys[pygame.K_s]:      keyvars[1] -= rate; print(keyvars)
+		if all_keys[pygame.K_e]:      keyvars[2] += rate; print(keyvars)
+		if all_keys[pygame.K_d]: 	  keyvars[2] -= rate; print(keyvars)
+		if all_keys[pygame.K_r]:      keyvars[3] += rate; print(keyvars)
+		if all_keys[pygame.K_f]:      keyvars[3] -= rate; print(keyvars)
+		if all_keys[pygame.K_t]:      keyvars[4] += rate; print(keyvars)
+		if all_keys[pygame.K_g]:      keyvars[4] -= rate; print(keyvars)
+		if all_keys[pygame.K_y]:      keyvars[5] += rate; print(keyvars)
+		if all_keys[pygame.K_h]:      keyvars[5] -= rate; print(keyvars)
 
 		if playback is None:
 			prev_mouse_pos = mouse_pos

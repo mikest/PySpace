@@ -15,11 +15,11 @@ class Camera:
 		# Represents the maximum RGB color shift that can result from ambient occlusion.
 		# Typically use positive values for 'glow' effects and negative for 'darkness'.
 		# Recommended Range: All values between -1.0 and 1.0
-		self.params['AMBIENT_OCCLUSION_COLOR_DELTA'] = (0.8, 0.8, 0.8)
+		self.params['AMBIENT_OCCLUSION_COLOR_DELTA'] = (0.5, 0.5, 0.5)
 
 		# Color of the background when the ray doesn't hit anything
 		# Recommended Range: All values between 0.0 and 1.0
-		self.params['BACKGROUND_COLOR'] = (0.6, 0.6, 0.9)
+		self.params['BACKGROUND_COLOR'] = (0.0, 0.0, 0.0)
 
 		# The strength of the depth of field effect.
 		# NOTE: ANTIALIASING_SAMPLES must be larger than 1 to use depth of field effects.
@@ -57,11 +57,11 @@ class Camera:
 		self.params['FOG_ENABLED'] = False
 
 		# When enabled, adds object glow to the background layer.
-		self.params['GLOW_ENABLED'] = False
+		self.params['GLOW_ENABLED'] = True
 
 		# Represents the maximum RGB color shift that can result from glow.
 		# Recommended Range: All values between -1.0 and 1.0
-		self.params['GLOW_COLOR_DELTA'] = (-0.2, 0.5, -0.2)
+		self.params['GLOW_COLOR_DELTA'] = (0.2, 0.2, 0.2)
 
 		# The sharpness of the glow.
 		# Recommended Range: 1.0 to 100.0

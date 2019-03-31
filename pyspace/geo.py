@@ -35,7 +35,7 @@ class Box:
 	def DE(self, p):
 		c = get_global(self.c)
 		s = get_global(self.s)
-		a = np.abs(p[:3] - c) - s;
+		a = np.abs(p[:3] - c) - s
 		return (min(max(a[0], a[1], a[2]), 0.0) + np.linalg.norm(np.maximum(a,0.0))) / p[3]
 
 	def NP(self, p):
